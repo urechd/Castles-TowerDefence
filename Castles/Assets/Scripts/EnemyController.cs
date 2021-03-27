@@ -10,7 +10,6 @@ public class EnemyController : MonoBehaviour
     private Transform pathCreator;
     private List<GameObject> path;
     private int nextCheckpointIndex = 0;
-    private float navigationTime = 0;
 
     private SpriteRenderer spriteRenderer;
 
@@ -40,8 +39,6 @@ public class EnemyController : MonoBehaviour
     {
         if (path != null)
         {
-            navigationTime = (navigationTime + Time.deltaTime) * movementSpeed;
-            
             if (nextCheckpointIndex < path.Count)
             {
                 if (spriteRenderer != null)
@@ -58,16 +55,14 @@ public class EnemyController : MonoBehaviour
                     }
                 }
 
-                transform.position = Vector2.MoveTowards(transform.position, path[nextCheckpointIndex].transform.position, navigationTime);
+                transform.position = Vector2.MoveTowards(transform.position, path[nextCheckpointIndex].transform.position, Time.deltaTime * movementSpeed);
             }
-
-            navigationTime = 0;
         }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Checkpoint"))
+        if (collision.CompareTag("Checkpoint"))
         {
             nextCheckpointIndex++;
 
