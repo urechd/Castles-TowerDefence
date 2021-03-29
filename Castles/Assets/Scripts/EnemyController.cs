@@ -6,8 +6,6 @@ public class EnemyController : MonoBehaviour
 {
     [SerializeField]
     private float movementSpeed;
-    [SerializeField]
-    private Transform pathCreator;
     private List<GameObject> path;
     private int nextCheckpointIndex = 0;
 
@@ -17,21 +15,6 @@ public class EnemyController : MonoBehaviour
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if (pathCreator != null)
-        {
-            var pathCreatorScript = pathCreator.GetComponent<PathCreator>();
-            
-            if (pathCreatorScript != null)
-            {
-                path = pathCreatorScript.GetPathPoints();
-
-                if (path != null && path.Any())
-                {
-                    transform.position = path[0].transform.position;
-                }
-            }
-        }
     }
 
     // Update is called once per frame
@@ -70,6 +53,15 @@ public class EnemyController : MonoBehaviour
             {
                 Destroy(gameObject);
             }
+        }
+    }
+
+    public void SetInitialParameters(List<GameObject> pathList)
+    {
+        if (pathList != null && pathList.Any())
+        {
+            path = pathList;
+            transform.position = path[0].transform.position;
         }
     }
 }

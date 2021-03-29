@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TowerController : MonoBehaviour
@@ -9,20 +11,21 @@ public class TowerController : MonoBehaviour
     [SerializeField]
     private float shootingDelay = 0.5f;
 
-    private GameObject enemyTarget;
+    private List<GameObject> enemyTargets;
     private float timeBetweenShots;
 
     void Start()
     {
         timeBetweenShots = shootingDelay;
+        enemyTargets = new List<GameObject>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (enemyTarget != null)
+        if (enemyTargets != null && enemyTargets.Any())
         {
-            Debug.DrawLine(transform.position, enemyTarget.transform.position, Color.red);
+            Debug.DrawLine(transform.position, enemyTargets[0].transform.position, Color.red);
 
             if (transform.childCount == 0 && timeBetweenShots >= shootingDelay)
             {
@@ -36,19 +39,20 @@ public class TowerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(enemyTarget == null &&
+        if(enemyTargets != null &&
            collision.CompareTag("Enemy"))
         {
-            enemyTarget = collision.gameObject;
+            enemyTargets.Add(collision.gameObject);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if(enemyTarget != null &&
+        if(enemyTargets != null &&
+           enemyTargets.Contains(collision.gameObject) &&
            collision.CompareTag("Enemy"))
         {
-            enemyTarget = null;
+            enemyTargets.Remove(collision.gameObject);
         }
     }
 
@@ -56,10 +60,9 @@ public class TowerController : MonoBehaviour
     {
         if (projectilePrefab != null)
         {
-            var projectile = Instantiate(projectilePrefab, transform);
-
+            var projectile = Instantiate(projectilePrefab);
             var controller = projectile.GetComponent<ProjectileController>();
-            controller.SetProjectileProperties(enemyTarget.transform, projectileSpeed);
+            controller.SetProjectileProperties(enemyTargets[0].transform, projectileSpeed);
         }
     }
 }
